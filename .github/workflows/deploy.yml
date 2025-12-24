@@ -1,0 +1,40 @@
+name: Deploy Backend to EC2 (Simple Versioned)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy backend
+        run: |
+          VERSION="v1.0.${GITHUB_RUN_NUMBER}"
+
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            set -e
+            cd ${{ secrets.EC2_PATH }}
+
+            echo "🚀 Deploying \$VERSION"
+
+            git pull origin main
+            npm install --production
+
+            echo "\$VERSION (deployed at \$(date))" > VERSION
+
+            pm2 restart portfolio-backend || pm2 start index.js --name portfolio-backend
+            pm2 save
+
+            echo "✅ Deployment complete"
+          EOF
