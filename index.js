@@ -46,6 +46,40 @@ app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobs', jobRoutes);
 
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+    try {
+        // Test database connection
+        await new Promise((resolve, reject) => {
+            db.ping((err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+
+        res.status(200).json({
+            status: 'healthy',
+            database: 'connected',
+            timestamp: new Date().toISOString(),
+            env: {
+                hasDbHost: !!process.env.DB_HOST,
+                hasDbUser: !!process.env.DB_USER,
+                hasDbPass: !!process.env.DB_PASS,
+                hasDbName: !!process.env.DB_NAME,
+                hasJwtSecret: !!process.env.JWT_SECRET
+            }
+        });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({
+            status: 'unhealthy',
+            database: 'disconnected',
+            error: error.message
+        });
+    }
+});
+
 // Basic Route
 app.get('/', (req, res) => {
     res.send('Edutalks Portfolio API is running...');

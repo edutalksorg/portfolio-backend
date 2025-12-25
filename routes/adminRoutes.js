@@ -71,9 +71,17 @@ router.post('/login', async (req, res) => {
         });
     } catch (error) {
         console.error('Admin login error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            errno: error.errno,
+            sqlMessage: error.sqlMessage,
+            stack: error.stack
+        });
         res.status(500).json({
             success: false,
-            message: 'Login failed. Please try again.'
+            message: 'Login failed. Please try again.',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
