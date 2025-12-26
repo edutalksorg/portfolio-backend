@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
     origin: [
-
+        'http://localhost:5173',
         'https://edutalksacademy.in',
         'https://www.edutalksacademy.in',
         process.env.FRONTEND_URL
@@ -120,11 +120,13 @@ const contactRoutes = require('./routes/contactRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const teamRoutes = require('./routes/teamRoutes');
 
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/team', teamRoutes);
 
 
 // Health check endpoint
