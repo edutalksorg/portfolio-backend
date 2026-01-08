@@ -17,7 +17,7 @@ app.use(cors({
     ].filter(Boolean),
     credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Database connection pool (more reliable for Azure)
 const db = mysql.createPool({
@@ -74,7 +74,7 @@ async function initializeDatabase() {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 role VARCHAR(255) NOT NULL,
-                image VARCHAR(255),
+                image LONGTEXT,
                 description TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
