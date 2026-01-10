@@ -81,6 +81,23 @@ async function initializeDatabase() {
         `);
         console.log('✅ Team members table verified/created');
 
+        // Create registrations table if not exists
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS registrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                grade VARCHAR(50) NOT NULL,
+                state VARCHAR(100),
+                board VARCHAR(50),
+                course VARCHAR(100),
+                session_mode ENUM('online', 'offline') DEFAULT 'offline',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('✅ Registrations table verified/created');
+
         // Check if admin user exists
         const [existingAdmins] = await connection.execute(
             'SELECT * FROM admins WHERE email = ?',
@@ -120,13 +137,17 @@ const contactRoutes = require('./routes/contactRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+
 const teamRoutes = require('./routes/teamRoutes');
+const registrationRoutes = require('./routes/registrationRoutes');
 
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobs', jobRoutes);
+
 app.use('/api/team', teamRoutes);
+app.use('/api/registrations', registrationRoutes);
 
 
 // Health check endpoint
